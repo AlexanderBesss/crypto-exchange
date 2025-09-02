@@ -13,7 +13,7 @@ async function processRequest(req, res){
     console.log("URL: ", url);
     const route = HttpRouter.get(url);
     console.log("Route: ", route);
-    return route.process(req, res);
+    return route.processActions(req, res);
 }
 
 async function createServer() {
