@@ -1,7 +1,7 @@
 import { OrderActionController } from "../../order/api/order-action-controller.js";
 import { DependencyContainer } from "../dependency-container.js";
 
-export class Router {
+export class HttpRouter {
     static get(path){
         switch(true){
             case "/":
