@@ -7,14 +7,14 @@ export class OrderActionController extends BaseController {
         this.orderService = orderService;
     }
 
-    async process(req, res) {
+    async processActions(req, res) {
         const url = req.url;
         const httpMethod = req.method;
         if(/buy/.test(url) && this.buyPOST.name.includes(httpMethod)){
-            return this.buyPOST(res);
+            return this.buyPOST(req);
         }
         if(/buy/.test(url) && this.buyGET.name.includes(httpMethod)){
-            return this.buyGET(res);
+            return this.buyGET(req);
         }
         if(/sell/.test(url) && this.sellPOST.name.includes(httpMethod)){
             return this.sellPOST(res);
@@ -22,16 +22,16 @@ export class OrderActionController extends BaseController {
         if(/cancel/.test(url) && this.cancelPOST.name.includes(httpMethod)){
             return this.cancelPOST(res); 
         }
-        res.writeHead(404, { "Content-Type": "text/plain" });
-        res.end("Unknown order action\n");
-        return;
+        throw new NotFoundError("Order action not found!");
     }
 
-    async buyPOST(body, res) {
-        throw new NotFoundError("Order not found!");
+    async buyPOST(req) {
+        const body = await this.bodyParser(req);
+        return new CreatedHttpResponse(body);
     }
 
-    async buyGET(body, res) {
+    async buyGET(req) {
+         const body = await this.bodyParser(req);
          return new CreatedHttpResponse({ message: "Buy GET action created" });
     }
 
