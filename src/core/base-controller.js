@@ -6,6 +6,6 @@ export class BaseController {
     }
 
     process(req, res) {
-        throw new Error("Method 'execute()' must be implemented.");
+        throw new Error("Method 'process()' must be implemented.");
     }
 }

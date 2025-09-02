@@ -1,5 +1,5 @@
-import { OrderActionController } from "../order/api/order-action-controller.js";
-import { DependencyContainer } from "./dependency-container.js";
+import { OrderActionController } from "../../order/api/order-action-controller.js";
+import { DependencyContainer } from "../dependency-container.js";
 
 export class Router {
     static get(path){
