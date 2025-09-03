@@ -16,7 +16,7 @@
   "main": "src/main.js",
   "scripts": {
     "start": "node src/main.js",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "seed": "node tests/seeds.js"
   },
   "dependencies": {
@@ -26,5 +26,9 @@
   },
   "devDependencies": {
     "jest": "^30.1.2"
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node"
   }
 }
