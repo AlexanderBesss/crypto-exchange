@@ -9,12 +9,18 @@ export class RedisConnector {
     }
 
     /**
-     * @returns {import("redis").RedisClientType}
+     * @returns {Promise<import("redis").RedisClientType>}
      */
-    getClient() {
+    async getClient() {
         if (!this.#client.isOpen){
-            this.#client.connect();
+            await this.#client.connect();
         }
         return this.#client;
+    }
+
+    async disconnect() {
+        if (this.#client.isOpen){
+            await this.#client.close();
+        }
     }
 }

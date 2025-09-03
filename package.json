@@ -16,7 +16,8 @@
   "main": "src/main.js",
   "scripts": {
     "start": "node src/main.js",
-    "test": "jest"
+    "test": "jest",
+    "seed": "node tests/seeds.js"
   },
   "dependencies": {
     "decimal.js": "^10.6.0",
