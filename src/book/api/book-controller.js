@@ -11,7 +11,7 @@ export class BookController extends BaseController {
     async processActions(req, res) {
         const url = req.url;
         const httpMethod = req.method;
-        if(/books/.test(url) && this.booksGET.name.includes(httpMethod)){
+        if(/^\/books$/.test(url) && this.booksGET.name.includes(httpMethod)){
             return this.booksGET(req);
         }
         throw new NotFoundError("Book action not found!");

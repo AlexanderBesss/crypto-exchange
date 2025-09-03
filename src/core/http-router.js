@@ -9,7 +9,7 @@ export class HttpRouter {
                 return "main page";
             case /^\/orders/.test(path):
                 return DependencyContainer.get(OrderActionController.name);
-            case /^\/books/.test(path):
+            case /^\/books$/.test(path):
                 return DependencyContainer.get(BookController.name);
             default:
                 return `Page ${path} not found!`;
