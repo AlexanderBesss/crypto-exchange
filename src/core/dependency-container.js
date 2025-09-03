@@ -1,3 +1,6 @@
+import { BookController } from "../book/api/book-controller.js";
+import { BookRepository } from "../book/repository/book-repository.js";
+import { BookService } from "../book/service/book-service.js";
 import { OrderActionController } from "../order/api/order-action-controller.js";
 import { OrderBookWebSocket } from "../order/api/order-book-websocket.js";
 import { OrderActionService } from "../order/service/order-action-service.js";
@@ -22,13 +25,18 @@ export class DependencyContainer {
         // Resources
         this.#dependencies.set(RedisConnector.name, new RedisConnector());
 
+        // Repositories
+        this.#dependencies.set(BookRepository.name, new BookRepository(this.get(RedisConnector.name)));
+
         // Services
         this.#dependencies.set(OrderActionService.name, new OrderActionService());
+        this.#dependencies.set(BookService.name, new BookService(this.get(BookRepository.name)));
         this.#dependencies.set(OrderBookService.name, new OrderBookService(this.get(WSS_SERVER_KEY)));
 
         // Endpoints
         this.#dependencies.set(OrderActionController.name, new OrderActionController(this.get(OrderActionService.name)));
         this.#dependencies.set(OrderBookWebSocket.name, new OrderBookWebSocket(this.get(WSS_SERVER_KEY), this.get(OrderBookService.name)));
+        this.#dependencies.set(BookController.name, new BookController(this.get(BookService.name)));
     }
 
     static get(name) {

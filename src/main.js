@@ -3,7 +3,7 @@ import { WebSocketServer } from "ws";
 import { DependencyContainer } from "./core/dependency-container.js";
 import { GlobalResponseHandler } from "./core/response/global-response-handler.js";
 import { NoContentHttpResponse } from "./core/response/http-response-type.js";
-import { HttpRouter } from "./core/router/http-router.js";
+import { HttpRouter } from "./core/http-router.js";
 
 async function processRequest(req, res){
     const url = req.url;
