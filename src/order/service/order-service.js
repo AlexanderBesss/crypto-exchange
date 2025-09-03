@@ -1,15 +1,21 @@
+import EventEmitter from "node:events";
 import { ConflictError, NotFoundError } from "../../core/response/http-response-type.js";
 import { Order, SellOrderInput } from "../model/order.js";
 import { OrderRedisRepository } from "../repository/order-redis-repository.js";
 
+export const ORDER_EVENT_NAME = 'OrderEvent';
+
 export class OrderService {
     #orderRepository;
+    #orderEventEmitter;
 
     /**
      * @param {OrderRedisRepository} orderRepository
+     * @param {EventEmitter} orderEventEmitter
      */
-    constructor(orderRepository) {
+    constructor(orderRepository, orderEventEmitter) {
         this.#orderRepository = orderRepository;
+        this.#orderEventEmitter = orderEventEmitter;
     }
 
     /**
@@ -57,9 +63,9 @@ export class OrderService {
             orderType,
             'open'
         );
-        
-        // emit order created event
-        return await this.#orderRepository.createOrder(order);
+        this.#orderEventEmitter.emit(ORDER_EVENT_NAME, order);
+        await this.#orderRepository.createOrder(order);
+        return order;
     }
 
     /**
@@ -91,7 +97,7 @@ export class OrderService {
             ...order, status: "cancelled"
         };
         await this.#orderRepository.deleteOrder(order.bookId, orderId);
-        // emit order cancelled event
+        this.#orderEventEmitter.emit(ORDER_EVENT_NAME, cancelledOrder);
         return cancelledOrder;
     }
 
@@ -101,7 +107,7 @@ export class OrderService {
             status: 'closed'
         }
         await this.#orderRepository.deleteOrder(order.bookId, order.orderId);
-        // emit order closed event
+        this.#orderEventEmitter.emit(ORDER_EVENT_NAME, closedOrder);
 
         return closedOrder;
     }
@@ -131,5 +137,4 @@ export class OrderService {
     #findOrderByPriceAndAmount(inputOrder, orders){
         return orders.find(order=> order.price === inputOrder.price && order.amount === inputOrder.amount);
     }
-
 }

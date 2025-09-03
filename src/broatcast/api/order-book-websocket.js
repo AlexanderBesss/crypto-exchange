@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { OrderBookService } from "../service/order-book-service.js";
+import { OrderBroadcastService } from "../service/order-book-service.js";
 import { randomUUID } from "crypto";
 
 export class OrderBookWebSocket {
@@ -8,7 +8,7 @@ export class OrderBookWebSocket {
 
     /**
      * @param {WebSocket} wsServer
-     * @param {OrderBookService} orderBookService 
+     * @param {OrderBroadcastService} orderBookService 
      */
     constructor(wsServer, orderBookService) {
         this.#orderBookService = orderBookService;

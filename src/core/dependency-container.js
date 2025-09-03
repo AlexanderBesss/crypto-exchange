@@ -1,15 +1,17 @@
+import { EventEmitter } from 'node:events';
 import { BookController } from "../book/api/book-controller.js";
 import { BookRedisRepository } from "../book/repository/book-redis-repository.js";
 import { BookService } from "../book/service/book-service.js";
-import { OrderBookWebSocket } from "../order/api/order-book-websocket.js";
+import { OrderBookWebSocket } from "../broatcast/api/order-book-websocket.js";
 import { OrderController } from "../order/api/order-controller.js";
 import { OrderRedisRepository } from "../order/repository/order-redis-repository.js";
-import { OrderBookService } from "../order/service/order-book-service.js";
+import { OrderBroadcastService } from "../broatcast/service/order-book-service.js";
 import { OrderService } from "../order/service/order-service.js";
 import { RedisConnector } from "../resource/redis-connector.js";
 
 const WSS_SERVER_KEY = 'WsServer';
 const HTTP_SERVER_KEY = 'HttpServer';
+const ORDER_EVENT_EMITTER_KEY = 'OrderEventEmitter';
 
 export class DependencyContainer {
     static #dependencies = new Map();
@@ -23,6 +25,9 @@ export class DependencyContainer {
     static #register() {
         // Register dependencies here (order matters)
 
+        // Event emitters
+        this.#dependencies.set(ORDER_EVENT_EMITTER_KEY, new EventEmitter());
+
         // Resources
         this.#dependencies.set(RedisConnector.name, new RedisConnector());
 
@@ -32,12 +37,12 @@ export class DependencyContainer {
 
         // Services
         this.#dependencies.set(BookService.name, new BookService(this.get(BookRedisRepository.name)));
-        this.#dependencies.set(OrderBookService.name, new OrderBookService(this.get(WSS_SERVER_KEY)));
-        this.#dependencies.set(OrderService.name, new OrderService(this.get(OrderRedisRepository.name)));
+        this.#dependencies.set(OrderBroadcastService.name, new OrderBroadcastService(this.get(WSS_SERVER_KEY), this.get(ORDER_EVENT_EMITTER_KEY)));
+        this.#dependencies.set(OrderService.name, new OrderService(this.get(OrderRedisRepository.name), this.get(ORDER_EVENT_EMITTER_KEY)));
 
         // Endpoints
         this.#dependencies.set(OrderController.name, new OrderController(this.get(OrderService.name)));
-        this.#dependencies.set(OrderBookWebSocket.name, new OrderBookWebSocket(this.get(WSS_SERVER_KEY), this.get(OrderBookService.name)));
+        this.#dependencies.set(OrderBookWebSocket.name, new OrderBookWebSocket(this.get(WSS_SERVER_KEY), this.get(OrderBroadcastService.name)));
         this.#dependencies.set(BookController.name, new BookController(this.get(BookService.name)));
     }
 
