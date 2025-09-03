@@ -22,20 +22,37 @@ export class BaseController {
     async #parseBody(req) {
         if(["POST", "PUT", "PATCH"].includes(req.method)){ 
             const body = await this.#getBody(req);
+            if(body === ''){
+                return;
+            }
             const parsedBody = JSON.parse(body);
             return parsedBody;
         }
     }
 
-    async getBody(schema, req) {
+    async getBody(req) {
         const body = await this.#parseBody(req);
+        return body;
+    }
+
+    validate(schema, data){
         try {
-            const validatedBody = schema.parse(body);
-            return validatedBody;
+            const validData = schema.parse(data);
+            return validData;
         } catch (error) {
             const errors = JSON.parse(error.message);
             const errorMessages = `Property "${errors[0].path[0]}" ${errors[0].message}`;
             throw new BadRequestError(errorMessages);
         }
+    }
+
+    /**
+     * 
+     * @param {String} url 
+     */
+    getParam(url){
+        const paramWithQuery = url.split('/').at(-1);
+        const param = paramWithQuery.split('?').at(0);
+        return param;
     }
 }

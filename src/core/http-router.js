@@ -1,5 +1,5 @@
 import { BookController } from "../book/api/book-controller.js";
-import { OrderActionController } from "../order/api/order-action-controller.js";
+import { OrderController } from "../order/api/order-controller.js";
 import { DependencyContainer } from "./dependency-container.js";
 
 export class HttpRouter {
@@ -8,7 +8,7 @@ export class HttpRouter {
             case "/":
                 return "main page";
             case /^\/orders/.test(path):
-                return DependencyContainer.get(OrderActionController.name);
+                return DependencyContainer.get(OrderController.name);
             case /^\/books$/.test(path):
                 return DependencyContainer.get(BookController.name);
             default:

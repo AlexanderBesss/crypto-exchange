@@ -49,7 +49,7 @@ export class InternalServerError extends BaseErrorResponse {
     }
 }
 
-export class DuplicateEntryError extends BaseErrorResponse {
+export class ConflictError extends BaseErrorResponse {
     constructor(message) {
         super(message, 409);
     }

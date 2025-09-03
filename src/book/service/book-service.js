@@ -1,10 +1,10 @@
 import { Book } from "../model/book.js";
-import { BookRepository } from "../repository/book-repository.js";
+import { BookRedisRepository } from "../repository/book-redis-repository.js";
 
 export class BookService {
     #bookRepository;
     /**
-    * @param {BookRepository} bookRepository 
+    * @param {BookRedisRepository} bookRepository 
     */
     constructor(bookRepository) {
         this.#bookRepository = bookRepository;

@@ -1,10 +1,11 @@
 import { BookController } from "../book/api/book-controller.js";
-import { BookRepository } from "../book/repository/book-repository.js";
+import { BookRedisRepository } from "../book/repository/book-redis-repository.js";
 import { BookService } from "../book/service/book-service.js";
-import { OrderActionController } from "../order/api/order-action-controller.js";
 import { OrderBookWebSocket } from "../order/api/order-book-websocket.js";
-import { OrderActionService } from "../order/service/order-action-service.js";
+import { OrderController } from "../order/api/order-controller.js";
+import { OrderRedisRepository } from "../order/repository/order-redis-repository.js";
 import { OrderBookService } from "../order/service/order-book-service.js";
+import { OrderService } from "../order/service/order-service.js";
 import { RedisConnector } from "../resource/redis-connector.js";
 
 const WSS_SERVER_KEY = 'WsServer';
@@ -26,15 +27,16 @@ export class DependencyContainer {
         this.#dependencies.set(RedisConnector.name, new RedisConnector());
 
         // Repositories
-        this.#dependencies.set(BookRepository.name, new BookRepository(this.get(RedisConnector.name)));
+        this.#dependencies.set(BookRedisRepository.name, new BookRedisRepository(this.get(RedisConnector.name)));
+        this.#dependencies.set(OrderRedisRepository.name, new OrderRedisRepository(this.get(RedisConnector.name)));
 
         // Services
-        this.#dependencies.set(OrderActionService.name, new OrderActionService());
-        this.#dependencies.set(BookService.name, new BookService(this.get(BookRepository.name)));
+        this.#dependencies.set(BookService.name, new BookService(this.get(BookRedisRepository.name)));
         this.#dependencies.set(OrderBookService.name, new OrderBookService(this.get(WSS_SERVER_KEY)));
+        this.#dependencies.set(OrderService.name, new OrderService(this.get(OrderRedisRepository.name)));
 
         // Endpoints
-        this.#dependencies.set(OrderActionController.name, new OrderActionController(this.get(OrderActionService.name)));
+        this.#dependencies.set(OrderController.name, new OrderController(this.get(OrderService.name)));
         this.#dependencies.set(OrderBookWebSocket.name, new OrderBookWebSocket(this.get(WSS_SERVER_KEY), this.get(OrderBookService.name)));
         this.#dependencies.set(BookController.name, new BookController(this.get(BookService.name)));
     }

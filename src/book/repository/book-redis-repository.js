@@ -1,6 +1,6 @@
 import { Book } from "../model/book.js";
 
-export class BookRepository {
+export class BookRedisRepository {
     #redisClientPromise;
 
     constructor(redisConnector) {
