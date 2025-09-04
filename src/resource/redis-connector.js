@@ -13,6 +13,7 @@ export class RedisConnector {
      */
     async getClient() {
         if (!this.#client.isOpen){
+            console.log("Redis has been successfully connected!");
             await this.#client.connect();
         }
         return this.#client;

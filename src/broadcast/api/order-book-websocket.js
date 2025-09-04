@@ -13,12 +13,13 @@ export class OrderBookWebSocket {
         this.#orderBookService = orderBookService;
         this.#wsServer = wsServer;
         this.#wsServer.on("connection", (socket) => {
+            console.log(`User ${socket.id} connected!`);
             socket.on("joinPair", (bookId) => {
                 this.joinPair(bookId, socket);
             });
 
             socket.on("disconnect", () => {
-                console.log(`User disconnected: ${socket.id}`);
+                console.log(`User ${socket.id} disconnected!`);
             });
         });
     }

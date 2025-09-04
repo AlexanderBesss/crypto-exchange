@@ -28,8 +28,8 @@ export class OrderBroadcastService {
 
     subscribeOnOrderEvent(){
         this.#eventEmitter.on(ORDER_EVENT_NAME, (orderEvent) => {
+            console.log('Receive order event: ', orderEvent);
             this.#wsServer.to(orderEvent.bookId).emit("updatesInBook", orderEvent);
-            console.log('Receive order event: ', orderEvent)
         });
     }
 }

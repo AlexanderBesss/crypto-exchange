@@ -38,6 +38,7 @@ export class BaseController {
     validate(schema, data){
         try {
             const validData = schema.parse(data);
+            console.log("Data is valid: ", data);
             return validData;
         } catch (error) {
             const errors = JSON.parse(error.message);

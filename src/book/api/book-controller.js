@@ -18,6 +18,7 @@ export class BookController extends BaseController {
     }
 
     async booksGET() {
+        console.log('Request all books.');
         const books = await this.#bookService.getAllBooks();
         return new OkHttpResponse(books);
     }
