@@ -1,15 +1,20 @@
 import { BaseController } from "../../core/base-controller.js";
 import { CreatedHttpResponse, NotFoundError, OkHttpResponse } from "../../core/response/http-response-type.js";
+import { RedisCache } from "../../resource/redis-cache.js";
 import { BookIdSchema, OrderIdSchema, SellOrderSchema } from "../model/validation/order-schema.js";
 import { OrderService } from "../service/order-service.js";
 
 export class OrderController extends BaseController {
+    #orderService;
+    #redisCache;
     /**
      * @param {OrderService} orderService 
+     * @param {RedisCache} redisCache
      */
-    constructor(orderService) {
+    constructor(orderService, redisCache) {
         super();
-        this.orderService = orderService;
+        this.#orderService = orderService;
+        this.#redisCache = redisCache;
     }
 
     async processActions(req, res) {
@@ -33,28 +38,28 @@ export class OrderController extends BaseController {
     async ordersGET(req){
         const bookId = this.getParam(req.url);
         this.validate(BookIdSchema, { bookId });
-        const orders = await this.orderService.getOrdersByBook(bookId);
+        const orders = await this.#redisCache.get('cache:getOrders', this.#orderService.getOrdersByBook.bind(this.#orderService), bookId);
         return new OkHttpResponse(orders);
     }
 
     async buyPOST(req) {
         const orderId = this.getParam(req.url);
         this.validate(OrderIdSchema, { orderId });
-        const order = await this.orderService.buyOrder(orderId);
+        const order = await this.#orderService.buyOrder(orderId);
         return new CreatedHttpResponse(order);
     }
 
     async sellPOST(req) {
         const body = await this.getBody(req);
         this.validate(SellOrderSchema, body);
-        const order = await this.orderService.sellOrder(body);
+        const order = await this.#orderService.sellOrder(body);
         return new CreatedHttpResponse(order);
     }
 
     async cancelDELETE(req) {
         const orderId = this.getParam(req.url);
         this.validate(OrderIdSchema, { orderId });
-        const cancelledOrder = await this.orderService.cancelOrder(orderId);
+        const cancelledOrder = await this.#orderService.cancelOrder(orderId);
         return new OkHttpResponse(cancelledOrder);
     }
 }

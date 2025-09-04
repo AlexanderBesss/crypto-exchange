@@ -2,7 +2,7 @@ import { BaseController } from "../../core/base-controller.js";
 import { NotFoundError, OkHttpResponse } from "../../core/response/http-response-type.js";
 
 export class BookController extends BaseController {
-    #bookService
+    #bookService;
     constructor(bookService) {
         super();
         this.#bookService = bookService;

@@ -3,10 +3,11 @@ import { BookController } from "../book/api/book-controller.js";
 import { BookRedisRepository } from "../book/repository/book-redis-repository.js";
 import { BookService } from "../book/service/book-service.js";
 import { OrderBookWebSocket } from "../broadcast/api/order-book-websocket.js";
+import { OrderBroadcastService } from "../broadcast/service/order-broadcast-service.js";
 import { OrderController } from "../order/api/order-controller.js";
 import { OrderRedisRepository } from "../order/repository/order-redis-repository.js";
-import { OrderBroadcastService } from "../broadcast/service/order-broadcast-service.js";
 import { OrderService } from "../order/service/order-service.js";
+import { RedisCache } from '../resource/redis-cache.js';
 import { RedisConnector } from "../resource/redis-connector.js";
 
 const WSS_SERVER_KEY = 'WsServer';
@@ -30,6 +31,7 @@ export class DependencyContainer {
 
         // Resources
         this.#dependencies.set(RedisConnector.name, new RedisConnector());
+        this.#dependencies.set(RedisCache.name,  new RedisCache(this.get(RedisConnector.name)));
 
         // Repositories
         this.#dependencies.set(BookRedisRepository.name, new BookRedisRepository(this.get(RedisConnector.name)));
@@ -41,7 +43,7 @@ export class DependencyContainer {
         this.#dependencies.set(OrderService.name, new OrderService(this.get(OrderRedisRepository.name), this.get(ORDER_EVENT_EMITTER_KEY)));
 
         // Endpoints
-        this.#dependencies.set(OrderController.name, new OrderController(this.get(OrderService.name)));
+        this.#dependencies.set(OrderController.name, new OrderController(this.get(OrderService.name), this.get(RedisCache.name)));
         this.#dependencies.set(OrderBookWebSocket.name, new OrderBookWebSocket(this.get(WSS_SERVER_KEY), this.get(OrderBroadcastService.name)));
         this.#dependencies.set(BookController.name, new BookController(this.get(BookService.name)));
     }
@@ -49,7 +51,7 @@ export class DependencyContainer {
     static get(name) {
         const dependency = this.#dependencies.get(name);
         if (!dependency) {
-            throw new Error(`Dependency ${name} not found!`);
+            throw new Error(`Dependency ${name} not registered!`);
         }
         return dependency;
     }
