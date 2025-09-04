@@ -1,4 +1,4 @@
-import { expect, jest } from '@jest/globals';
+import { beforeEach, expect, jest } from '@jest/globals';
 import { OrderService } from "../../src/order/service/order-service.js";
 import { askOrder, bidOrder } from "./order-dataset.js";
 import { ConflictError, NotFoundError } from '../../src/core/response/http-response-type.js';
@@ -13,6 +13,10 @@ describe('OrderService', ()=> {
         emit: jest.fn(),
     };
     const orderService = new OrderService(orderRedisRepository, orderEventEmitter);
+
+    beforeEach(()=>{
+        jest.resetAllMocks();
+    })
 
     describe('getOrdersByBook', () => {
         it('should return all orders ask in ascending and bid in descending order', async ()=> {
@@ -52,11 +56,40 @@ describe('OrderService', ()=> {
                 expect(event).toMatchObject(expectedOrder);
             });
 
-            const result = await orderService.buyOrder('bookId');
+            const result = await orderService.buyOrder(expectedOrder.orderId);
 
             expect(result).toMatchObject(expectedOrder);
             expect(deleteSpy).toHaveBeenCalledTimes(1);
             expect(eventEmitterSpy).toHaveBeenCalledTimes(1);
         });
-    })
+    });
+
+    describe('cancelOrder', () => {
+        it('should throw NotFound error if order was not found', async ()=> {
+            jest.spyOn(orderRedisRepository, 'findOrderById').mockImplementation(() => undefined);
+            const expectedOrders = orderService.buyOrder('bookId');
+            await expect(expectedOrders).rejects.toThrow(NotFoundError);
+        });
+
+        it('should cancel an order', async ()=> {
+            jest.spyOn(orderRedisRepository, 'findOrderById').mockImplementation(() => askOrder);
+            const deleteSpy = jest.spyOn(orderRedisRepository, 'deleteOrder').mockImplementationOnce((bookId, orderId)=>{
+                expect(orderId).toEqual(askOrder.orderId);
+                expect(bookId).toEqual(askOrder.bookId);
+            });
+            const expectedOrder = {
+                ...askOrder,
+                status: 'cancelled',
+            }
+            const eventEmitterSpy = jest.spyOn(orderEventEmitter, 'emit').mockImplementationOnce((name, event)=>{
+                expect(event).toMatchObject(expectedOrder);
+            });
+
+            const result = await orderService.cancelOrder(expectedOrder.orderId);
+
+            expect(result).toMatchObject(expectedOrder);
+            expect(deleteSpy).toHaveBeenCalledTimes(1);
+            expect(eventEmitterSpy).toHaveBeenCalledTimes(1);
+        });
+    });
 });

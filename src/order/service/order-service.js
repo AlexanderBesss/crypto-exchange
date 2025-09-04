@@ -51,7 +51,7 @@ export class OrderService {
         const similarOrders = await this.#orderRepository.findSimilarOrders(orderInput);
         const orderToSell = this.#findOrderToSell(orderInput, similarOrders);
         if(orderToSell){
-            return this.closeOrder(orderToSell);
+            return this.#closeOrder(orderToSell);
         }
         const { bid } = await this.getOrdersByBook(orderInput.bookId);
         const orderType = bid[0] && bid[0].price < orderInput.price ? "ask" : "bid" 
@@ -73,14 +73,11 @@ export class OrderService {
      * @returns {Promise<Order>}
      */
     async buyOrder(orderId) {
-        const order = await this.#orderRepository.findOrderById(orderId);
-        if (!order) {
-            throw new NotFoundError(`Order ${orderId} not found!`);
-        }
+        const order = await this.#findOrderOrThrow(orderId);
         if(order.type === "bid"){
             throw new ConflictError("You can't buy BID order!");
         }
-        const closedOrder = await this.closeOrder(order);
+        const closedOrder = await this.#closeOrder(order);
         return closedOrder;
     }
 
@@ -89,10 +86,7 @@ export class OrderService {
      * @returns {Promise<Order>}
      */
     async cancelOrder(orderId) {
-        const order = await this.#orderRepository.findOrderById(orderId);
-        if (!order) {
-            throw new NotFoundError(`Order ${orderId} not found!`);
-        }
+        const order = await this.#findOrderOrThrow(orderId);
         const cancelledOrder = {
             ...order, status: "cancelled"
         };
@@ -101,7 +95,7 @@ export class OrderService {
         return cancelledOrder;
     }
 
-    async closeOrder(order){
+    async #closeOrder(order){
         const closedOrder = {
             ...order,
             status: 'closed'
@@ -110,6 +104,14 @@ export class OrderService {
         this.#orderEventEmitter.emit(ORDER_EVENT_NAME, closedOrder);
 
         return closedOrder;
+    }
+
+    async #findOrderOrThrow(orderId){
+         const order = await this.#orderRepository.findOrderById(orderId);
+        if (!order) {
+            throw new NotFoundError(`Order ${orderId} not found!`);
+        }
+        return order;
     }
 
      /**
