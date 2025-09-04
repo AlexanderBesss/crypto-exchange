@@ -2,10 +2,10 @@ import { EventEmitter } from 'node:events';
 import { BookController } from "../book/api/book-controller.js";
 import { BookRedisRepository } from "../book/repository/book-redis-repository.js";
 import { BookService } from "../book/service/book-service.js";
-import { OrderBookWebSocket } from "../broatcast/api/order-book-websocket.js";
+import { OrderBookWebSocket } from "../broadcast/api/order-book-websocket.js";
 import { OrderController } from "../order/api/order-controller.js";
 import { OrderRedisRepository } from "../order/repository/order-redis-repository.js";
-import { OrderBroadcastService } from "../broatcast/service/order-book-service.js";
+import { OrderBroadcastService } from "../broadcast/service/order-broadcast-service.js";
 import { OrderService } from "../order/service/order-service.js";
 import { RedisConnector } from "../resource/redis-connector.js";
 

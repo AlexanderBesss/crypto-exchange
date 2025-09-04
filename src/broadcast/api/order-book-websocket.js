@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { OrderBroadcastService } from "../service/order-book-service.js";
+import { OrderBroadcastService } from "../service/order-broadcast-service.js";
 
 export class OrderBookWebSocket {
     #wsServer;
