@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "86d8f16e-fb7d-4070-ad7d-3fbc85186b98",
+		"name": "HTTP: Crypto-exchange",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11150687"
+	},
+	"item": [
+		{
+			"name": "Get All Books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}/books",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Orders in a Book",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}/orders/book:1",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"orders",
+						"book:1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}/orders/buy/order:dd24d019-920b-4c90-bb03-154c13b99375",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"orders",
+						"buy",
+						"order:dd24d019-920b-4c90-bb03-154c13b99375"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"110ec58a-a0f2-4ac4-8393-c866d813b8d1\",\r\n    \"price\": \"10\",\r\n    \"amount\": 1\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localhost}}/orders/cancel/order:1",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"orders",
+						"cancel",
+						"order:1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sell Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bookId\": \"book:1\",\r\n    \"amount\": 100,\r\n    \"price\": 5000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localhost}}/orders/sell",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"orders",
+						"sell"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "localhost",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
