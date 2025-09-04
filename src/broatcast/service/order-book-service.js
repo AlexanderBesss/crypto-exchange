@@ -1,5 +1,5 @@
 import EventEmitter from "node:events";
-import { WebSocket } from "ws";
+import { Server } from "socket.io";
 import { ORDER_EVENT_NAME } from "../../order/service/order-service.js";
 
 export class OrderBroadcastService {
@@ -7,7 +7,7 @@ export class OrderBroadcastService {
     #eventEmitter;
      
     /**
-     * @param {WebSocket} wsServer 
+     * @param {Server} wsServer 
      * @param {EventEmitter} eventEmitter 
      */
     constructor(wsServer, eventEmitter) {
@@ -16,16 +16,19 @@ export class OrderBroadcastService {
         this.subscribeOnOrderEvent();
     }
 
-    joinPair(wsClient){
-        console.log(`User ${wsClient.id} joining pair...`);
-    }
-
-    leavePair(wsClient){
-        console.log(`User ${wsClient.id} leaving pair...`);
+    joinPair(bookId, socket){
+        if (socket.currentPair) {
+            socket.leave(socket.currentPair);
+            console.log(`User ${socket.id} left ${socket.currentPair} pair.`);
+        }
+        socket.join(bookId);
+        socket.currentPair = bookId;
+        console.log(`User ${socket.id} joining ${bookId} pair.`);
     }
 
     subscribeOnOrderEvent(){
         this.#eventEmitter.on(ORDER_EVENT_NAME, (orderEvent) => {
+            this.#wsServer.to(orderEvent.bookId).emit("updatesInBook", orderEvent);
             console.log('Receive order event: ', orderEvent)
         });
     }

@@ -1,5 +1,5 @@
 import http from "node:http";
-import { WebSocketServer } from "ws";
+import { Server } from "socket.io";
 import { DependencyContainer } from "./core/dependency-container.js";
 import { GlobalResponseHandler } from "./core/response/global-response-handler.js";
 import { NoContentHttpResponse } from "./core/response/http-response-type.js";
@@ -21,8 +21,11 @@ async function createServer() {
         await GlobalResponseHandler.handle(processRequest, req, res);
     });
 
-    const wsServer = new WebSocketServer({ server: httpServer });
-    
+    const wsServer = new Server(httpServer, {
+        cors: {
+            origin: "*",
+        },
+    });
     // Initialize Dependency container
     new DependencyContainer(httpServer, wsServer);
 
